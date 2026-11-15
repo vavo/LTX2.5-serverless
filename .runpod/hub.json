@@ -52,42 +52,82 @@
         }
       },
       {
-        "key": "AWS_BUCKET_NAME",
+        "key": "R2_ACCOUNT_ID",
         "input": {
-          "name": "S3 Bucket Name",
+          "name": "R2 Account ID",
           "type": "string",
-          "description": "Optional AWS S3 bucket for generated artifacts",
+          "description": "Cloudflare account ID (subdomain of <id>.r2.cloudflarestorage.com)",
           "default": "",
+          "advanced": false
+        }
+      },
+      {
+        "key": "R2_ACCESS_KEY_ID",
+        "input": {
+          "name": "R2 Access Key ID",
+          "type": "string",
+          "description": "R2 token with Object Read & Write on the output bucket",
+          "default": "",
+          "advanced": false
+        }
+      },
+      {
+        "key": "R2_SECRET_ACCESS_KEY",
+        "input": {
+          "name": "R2 Secret Access Key",
+          "type": "string",
+          "description": "Secret for the R2 token",
+          "default": "",
+          "advanced": false
+        }
+      },
+      {
+        "key": "RUNPOD_WEBHOOK_SECRET",
+        "input": {
+          "name": "Webhook Signing Secret",
+          "type": "string",
+          "description": "Shared HMAC secret used to sign render callbacks (32+ bytes)",
+          "default": "",
+          "advanced": false
+        }
+      },
+      {
+        "key": "ALLOWED_CALLBACK_ORIGIN",
+        "input": {
+          "name": "Allowed Callback Origin",
+          "type": "string",
+          "description": "Only send callbacks to this HTTPS origin (e.g. https://app.example.com)",
+          "default": "",
+          "advanced": false
+        }
+      },
+      {
+        "key": "ALLOWED_IMAGE_ORIGIN",
+        "input": {
+          "name": "Allowed Image Origin",
+          "type": "string",
+          "description": "Public HTTPS origin that image-to-video source images are downloaded from",
+          "default": "",
+          "advanced": false
+        }
+      },
+      {
+        "key": "ENABLE_KEYFRAME_GUIDES",
+        "input": {
+          "name": "Enable Keyframe Guides",
+          "type": "boolean",
+          "description": "Allow images after frame 0 (experimental until verified on GPU)",
+          "default": false,
           "advanced": true
         }
       },
       {
-        "key": "AWS_ACCESS_KEY_ID",
+        "key": "LTX_FRONTEND_ENABLED",
         "input": {
-          "name": "S3 Access Key ID",
-          "type": "string",
-          "description": "AWS Access Key ID (if S3 upload is enabled)",
-          "default": "",
-          "advanced": true
-        }
-      },
-      {
-        "key": "AWS_SECRET_ACCESS_KEY",
-        "input": {
-          "name": "S3 Secret Access Key",
-          "type": "string",
-          "description": "AWS Secret Access Key (if S3 upload is enabled)",
-          "default": "",
-          "advanced": true
-        }
-      },
-      {
-        "key": "AWS_DEFAULT_REGION",
-        "input": {
-          "name": "S3 Region",
-          "type": "string",
-          "description": "AWS region for optional S3 artifact uploads",
-          "default": "us-east-1",
+          "name": "Enable Debug Frontend",
+          "type": "boolean",
+          "description": "Start the legacy debug frontend on :7777 (not used by the scene/concat contract)",
+          "default": false,
           "advanced": true
         }
       },
