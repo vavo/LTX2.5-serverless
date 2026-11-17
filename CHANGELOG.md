@@ -1,3 +1,20 @@
+# Changelog
+
+## Unreleased
+
+### Features
+
+- Add text-to-video generation alongside image-to-video in the frontend, payload builder, and legacy handler. Existing requests continue to default to image-to-video. ([#1](https://github.com/vavo/LTX2.5-serverless/pull/1))
+- Bundle separate text-to-video API and ComfyUI editor workflows using the existing model stack, with no additional model downloads.
+
+### Fixes
+
+- Keep the selected image and preview when switching between generation modes. Text-to-video requests still omit image data. ([79f64b8](https://github.com/vavo/LTX2.5-serverless/commit/79f64b8))
+
+### Security
+
+- Update release-tool dependencies `launch-editor` from 2.14.1 to 2.14.2 and `shell-quote` from 1.10.0 to 1.12.0, resolving four Dependabot alerts. These dependencies are not included in the GPU runtime image. ([1230a34](https://github.com/vavo/LTX2.5-serverless/commit/1230a34))
+
 # [5.3.0](https://github.com/runpod-workers/worker-comfyui/compare/5.2.0...5.3.0) (2025-07-22)
 
 ## 5.8.5

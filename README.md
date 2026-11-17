@@ -15,6 +15,15 @@ Generate LTX 2.5 text-to-video and image-to-video on RunPod without rebuilding t
 - Separate workflows for API execution and the ComfyUI editor, for both text-to-video and image-to-video
 - Live startup checks that catch missing or unindexed models before jobs arrive
 
+### Choose a generation mode
+
+| Mode | Input | API workflow |
+| --- | --- | --- |
+| Text to Video | Describe the scene and motion in a prompt; no source image needed | [Text-to-video workflow](video_ltx2_5_t2v_API.json) |
+| Image to Video | Upload a starting image and describe how it should move | [Image-to-video workflow](video_ltx2_5_i2v_API.json) |
+
+Select either mode in the frontend, then choose the duration, aspect ratio, and optional AI prompt enhancement. Both modes use the same model stack and are available through the RunPod API and the bundled ComfyUI editor workflows.
+
 The recommended image is:
 
 ```text
