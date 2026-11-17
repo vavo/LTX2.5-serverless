@@ -1,4 +1,4 @@
-# LTX 2.5 video + latest Comfy UI (RunPod-first serverless/pod image)
+# LTX 2.5 + ComfyUI for RunPod Serverless and Pods
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-vavo-5F7FFF?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white)](https://www.buymeacoffee.com/vavo) [![Sponsor on GitHub](https://img.shields.io/badge/Sponsor%20on-GitHub-24292F?style=for-the-badge&logo=github)](https://github.com/sponsors/vavo) [![Support on Patreon](https://img.shields.io/badge/Support%20on-Patreon-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/vavo)
 
@@ -154,10 +154,10 @@ Code changes take effect only after rebuilding the image and replacing the runni
 
 | Target | Purpose |
 | --- | --- |
-| `ltx2-5-distilled-int8` | Recommended CUDA 13 image with automatic model preload |
-| `ltx2-5-distilled-int8-cu128` | CUDA 12.8 fallback with automatic model preload |
-| `base` | CUDA 13 base without model preload |
-| `base-cuda12-8-1` | CUDA 12.8 base without model preload |
+| `ltx2-5-distilled-int8` | Recommended CUDA 13 image with automatic model download on startup |
+| `ltx2-5-distilled-int8-cu128` | CUDA 12.8 fallback with automatic model download on startup |
+| `base` | CUDA 13 base with automatic model download disabled by default |
+| `base-cuda12-8-1` | CUDA 12.8 base with automatic model download disabled by default |
 
 ## Runtime modes
 
