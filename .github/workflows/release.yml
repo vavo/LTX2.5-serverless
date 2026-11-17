@@ -15,7 +15,7 @@ jobs:
       checks: write
 
     outputs:
-      hasChangesets: ${{ steps.changesets.outputs.hasChangesets }}
+      hasChangesets: ${{ steps.changesets.outputs.has-changesets }}
       version: ${{ steps.version.outputs.version }}
 
     steps:
@@ -38,14 +38,13 @@ jobs:
         id: changesets
         uses: changesets/action@v2
         with:
-          version: pnpm changeset:version
-          commit: "chore: version packages"
-          title: "chore: version packages"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          version-script: pnpm changeset:version
+          commit-message: "chore: version packages"
+          pr-title: "chore: version packages"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create check run on changeset PR branch
-        if: steps.changesets.outputs.hasChangesets == 'true'
+        if: steps.changesets.outputs.has-changesets == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -62,7 +61,7 @@ jobs:
         id: version
         if: >-
           github.event_name == 'workflow_dispatch' ||
-          (steps.changesets.outputs.hasChangesets == 'false' && contains(github.event.head_commit.message, 'chore: version packages'))
+          (steps.changesets.outputs.has-changesets == 'false' && contains(github.event.head_commit.message, 'chore: version packages'))
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
   docker:
