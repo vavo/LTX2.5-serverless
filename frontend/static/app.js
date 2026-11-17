@@ -140,9 +140,6 @@ function setMode(mode) {
   }
 
   state.mode = mode;
-  if (mode === "t2v") {
-    setFile(null);
-  }
   updateModeUi();
   setFeedback("");
 }
