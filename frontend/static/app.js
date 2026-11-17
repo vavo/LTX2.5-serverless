@@ -7,6 +7,13 @@ const state = {
   payloadJson: "",
   runMode: "worker",
   submissionMode: "endpoint",
+  mode: "i2v",
+  textToVideoEnabled: false,
+};
+
+const heroCopyByMode = {
+  i2v: "Generate the JSON body for the LTX image-to-video API without doing frame math by hand like a prisoner.",
+  t2v: "Generate the JSON body for the LTX text-to-video API. No image required, still no frame math by hand.",
 };
 
 const ratioDimensions = {
@@ -56,6 +63,10 @@ const responseStatus = document.querySelector("#response-status");
 const responseMedia = document.querySelector("#response-media");
 const responseOutput = document.querySelector("#response-output");
 const aspectButtons = document.querySelectorAll("[data-aspect-ratio]");
+const modePills = document.querySelectorAll("[data-mode]");
+const modeT2v = document.querySelector("#mode-t2v");
+const secondaryGrid = document.querySelector(".secondary-grid");
+const heroCopy = document.querySelector("#hero-copy");
 const POD_STATUS_POLL_INTERVAL_MS = 2000;
 const POD_STATUS_POLL_TIMEOUT_MS = 15 * 60 * 1000;
 
@@ -105,6 +116,37 @@ function updateAspectButtons() {
   });
 }
 
+function updateModeUi() {
+  modePills.forEach((pill) => {
+    const isActive = pill.dataset.mode === state.mode;
+    pill.classList.toggle("mode-pill-active", isActive);
+    pill.setAttribute("aria-checked", String(isActive));
+  });
+
+  if (state.mode === "t2v") {
+    uploadPanel.hidden = true;
+    secondaryGrid.classList.add("secondary-grid-single");
+  } else {
+    uploadPanel.hidden = false;
+    secondaryGrid.classList.remove("secondary-grid-single");
+  }
+
+  heroCopy.textContent = heroCopyByMode[state.mode];
+}
+
+function setMode(mode) {
+  if (mode === state.mode) {
+    return;
+  }
+
+  state.mode = mode;
+  if (mode === "t2v") {
+    setFile(null);
+  }
+  updateModeUi();
+  setFeedback("");
+}
+
 function updateSubmitModeUi() {
   if (state.submissionMode === "pod") {
     endpointPanel.hidden = true;
@@ -151,6 +193,7 @@ function setFile(file) {
 
   state.file = file;
   if (!file) {
+    sourceImageInput.value = "";
     filePill.hidden = true;
     fileName.textContent = "";
     imagePreviewCard.hidden = true;
@@ -185,14 +228,18 @@ function readFileAsDataUrl(file) {
 }
 
 function renderSummary(summary) {
-  const chips = [
+  const chips = [];
+  if (summary.mode === "t2v" || summary.mode === "i2v") {
+    chips.push(summary.mode === "t2v" ? "text to video" : "image to video");
+  }
+  chips.push(
     `${summary.frames} frames`,
     `${summary.seconds.toFixed(1)}s`,
     `${summary.width} × ${summary.height}`,
     `${summary.aspect_ratio}`,
     `${summary.fps} fps`,
     summary.optimize_prompt ? "AI prompt on" : "AI prompt off",
-  ];
+  );
 
   payloadSummary.innerHTML = "";
   chips.forEach((text) => {
@@ -379,6 +426,8 @@ async function initializeConfig() {
   state.fps = config.fps;
   state.runMode = config.run_mode || "worker";
   state.submissionMode = config.submission_mode || "endpoint";
+  state.textToVideoEnabled = Boolean(config.text_to_video_enabled);
+  modeT2v.disabled = !state.textToVideoEnabled;
   secondsField.min = String(config.seconds.min);
   secondsField.max = String(config.seconds.max);
   secondsField.step = String(config.seconds.step);
@@ -391,6 +440,7 @@ async function initializeConfig() {
   secondsMaxLabel.textContent = formatSecondsLabel(config.seconds.max);
   updateSubmitModeUi();
   updateDurationSummary();
+  updateModeUi();
 }
 
 async function buildPayload({
@@ -404,25 +454,30 @@ async function buildPayload({
     return null;
   }
 
-  if (!state.file) {
+  if (state.mode === "i2v" && !state.file) {
     setFeedback("Source image is required for the current workflow.", "error");
     return null;
   }
 
-  const imageDataUrl = await readFileAsDataUrl(state.file);
+  const body = {
+    prompt: promptField.value,
+    seconds: Number.parseFloat(secondsField.value),
+    aspect_ratio: state.aspectRatio,
+    optimize_prompt: optimizeField.checked,
+    mode: state.mode,
+  };
+
+  if (state.mode === "i2v") {
+    body.image_name = state.file.name;
+    body.image_data_url = await readFileAsDataUrl(state.file);
+  }
+
   const response = await fetch("/api/payload", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      prompt: promptField.value,
-      seconds: Number.parseFloat(secondsField.value),
-      aspect_ratio: state.aspectRatio,
-      image_name: state.file.name,
-      image_data_url: imageDataUrl,
-      optimize_prompt: optimizeField.checked,
-    }),
+    body: JSON.stringify(body),
   });
 
   const data = await response.json();
@@ -449,6 +504,12 @@ aspectButtons.forEach((button) => {
     state.aspectRatio = button.dataset.aspectRatio;
     updateAspectButtons();
     updateDurationSummary();
+  });
+});
+
+modePills.forEach((pill) => {
+  pill.addEventListener("click", () => {
+    setMode(pill.dataset.mode);
   });
 });
 
@@ -606,6 +667,8 @@ submitButton.addEventListener("click", async () => {
 
 updatePromptCounter();
 updateAspectButtons();
+modeT2v.disabled = !state.textToVideoEnabled;
+updateModeUi();
 setFile(null);
 initializeConfig().catch((error) => {
   setFeedback(error.message, "error");

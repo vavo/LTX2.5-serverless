@@ -62,7 +62,7 @@ RunPod mounts Serverless volumes at `/runpod-volume`; this worker aliases that p
 
 ## 4. Smoke test
 
-Use the checked-in [`video_ltx2_5_i2v_API.json`](../video_ltx2_5_i2v_API.json) and the request shape in the [README](../README.md#run-a-worker-job). Verify:
+Use one of the checked-in workflows — [`video_ltx2_5_i2v_API.json`](../video_ltx2_5_i2v_API.json) or [`video_ltx2_5_t2v_API.json`](../video_ltx2_5_t2v_API.json) — and the request shape in the [README](../README.md#run-a-worker-job). Verify:
 
 1. Bootstrap reports the persisted LTX stack as ready.
 2. ComfyUI starts without missing-node or missing-model errors.
@@ -103,7 +103,7 @@ Expect an empty result cache after replacement. Models and download/compiler cac
 | `ltx2-5-distilled-int8` | 13.0.2 | `<version>-ltx2.5-distilled-int8-cu130` |
 | `ltx2-5-distilled-int8-cu128` | 12.8.1 | `<version>-ltx2.5-distilled-int8-cu128` |
 
-New clients should send `input.workflow` plus optional `input.images`. The older `input.prompt`, `input.image_url`, and `input.api_key` route remains only for compatibility. Audio can participate in the bundled LTX workflow, but the handler currently exposes only image and video artifact collections.
+New clients should send `input.workflow` plus optional `input.images`. The older `input.prompt`, `input.image_url`, and `input.api_key` route remains only for compatibility; it defaults to image-to-video and needs an explicit `input.mode` of `t2v`, without `input.image_url`, to run text-to-video. Audio can participate in the bundled LTX workflow, but the handler currently exposes only image and video artifact collections.
 
 ## Pod mode
 

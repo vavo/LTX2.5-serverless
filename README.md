@@ -2,17 +2,17 @@
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-vavo-5F7FFF?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white)](https://www.buymeacoffee.com/vavo) [![Sponsor on GitHub](https://img.shields.io/badge/Sponsor%20on-GitHub-24292F?style=for-the-badge&logo=github)](https://github.com/sponsors/vavo) [![Support on Patreon](https://img.shields.io/badge/Support%20on-Patreon-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/vavo)
 
-Generate LTX 2.5 image-to-video on RunPod without rebuilding the same GPU environment every time. Use it as a serverless worker for API jobs or launch it as an interactive pod with both a simple frontend and the full ComfyUI canvas.
+Generate LTX 2.5 text-to-video and image-to-video on RunPod without rebuilding the same GPU environment every time. Use it as a serverless worker for API jobs or launch it as an interactive pod with both a simple frontend and the full ComfyUI canvas.
 
 ## What you get
 
 - LTX 2.5 distilled INT8 inference tuned for modern NVIDIA GPUs
-- A clean web frontend for quick image-to-video generation
+- A clean web frontend for quick text-to-video and image-to-video generation
 - ComfyUI for visual workflow editing and advanced control
 - A RunPod serverless handler for `/run` and `/runsync`
 - Automatic first-boot model downloads to persistent storage
 - Persistent models, ComfyUI state, Python environment, and caches under `/workspace`
-- Separate workflows for API execution and the ComfyUI editor
+- Separate workflows for API execution and the ComfyUI editor, for both text-to-video and image-to-video
 - Live startup checks that catch missing or unindexed models before jobs arrive
 
 The recommended image is:
@@ -59,7 +59,7 @@ Redis needs no separate service or account. Leave `REDIS_URL` unset: each worker
 
 ### Run a worker job
 
-Submit the checked-in [LTX 2.5 API workflow](./video_ltx2_5_i2v_API.json) through RunPod `/run` or `/runsync`:
+Submit one of the checked-in LTX 2.5 API workflows — [image-to-video](./video_ltx2_5_i2v_API.json) or [text-to-video](./video_ltx2_5_t2v_API.json) — through RunPod `/run` or `/runsync`:
 
 ```json
 {
@@ -75,7 +75,7 @@ Submit the checked-in [LTX 2.5 API workflow](./video_ltx2_5_i2v_API.json) throug
 }
 ```
 
-`workflow` must contain a ComfyUI API-format workflow; the empty object above only shows the request structure. Results are returned in `output.images[]` and/or `output.videos[]`. S3 output is supported when configured; otherwise artifacts are returned inline.
+`workflow` must contain a ComfyUI API-format workflow; the empty object above only shows the request structure. Text-to-video jobs carry no source frame, so they omit `images` entirely. Results are returned in `output.images[]` and/or `output.videos[]`. S3 output is supported when configured; otherwise artifacts are returned inline.
 
 ## Option 2: Run as an interactive pod
 
@@ -105,10 +105,10 @@ HUGGINGFACE_ACCESS_TOKEN=hf_xxx
 
 After startup, open either service from RunPod:
 
-- **Frontend — port `7777`:** upload an image, write a prompt, choose the duration, and generate
-- **ComfyUI — port `8188`:** edit or run the bundled visual LTX 2.5 workflow
+- **Frontend — port `7777`:** pick Text to Video or Image to Video from the mode selector, write a prompt (and upload an image for image-to-video), choose the duration, and generate
+- **ComfyUI — port `8188`:** edit or run the bundled visual LTX 2.5 workflows
 
-The editor workflow is installed in the ComfyUI user workflow library. The API workflow remains separate for the frontend and serverless handler.
+Both editor workflows are installed in the ComfyUI user workflow library. The API workflows remain separate for the frontend and serverless handler. Text-to-video uses the same model stack as image-to-video, so switching modes needs no additional model downloads.
 
 Models download automatically on the first deployment. Startup then verifies that ComfyUI can actually see the transformer, text encoders, VAEs, and latent upscaler—not merely that files exist somewhere on disk looking decorative.
 

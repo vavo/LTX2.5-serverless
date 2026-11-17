@@ -290,12 +290,17 @@ sync_named_files_from_image() {
 
 remove_legacy_api_workflow() {
     local workflow_target_dir="$1"
-    local legacy_workflow="${workflow_target_dir}/video_ltx2_5_i2v_API.json"
+    local legacy_workflow_name=""
+    local legacy_workflow=""
 
-    if [ -f "${legacy_workflow}" ]; then
-        bootstrap_log "Removing legacy API-format workflow from ComfyUI user library"
-        rm -f "${legacy_workflow}"
-    fi
+    for legacy_workflow_name in video_ltx2_5_i2v_API.json video_ltx2_5_t2v_API.json; do
+        legacy_workflow="${workflow_target_dir}/${legacy_workflow_name}"
+
+        if [ -f "${legacy_workflow}" ]; then
+            bootstrap_log "Removing legacy API-format workflow from ComfyUI user library"
+            rm -f "${legacy_workflow}"
+        fi
+    done
 }
 
 write_extra_model_paths() {
@@ -350,7 +355,7 @@ bootstrap_workspace() {
         sync_named_files_from_image \
             "${workflow_template_source_root}" \
             "${workflow_target_dir}" \
-            "${COMFY_BOOTSTRAP_WORKFLOWS:-video_ltx2_5_i2v.json}"
+            "${COMFY_BOOTSTRAP_WORKFLOWS:-video_ltx2_5_i2v.json,video_ltx2_5_t2v.json}"
         write_extra_model_paths "${comfy_runtime_root}" "${extra_model_paths_file}"
         return
     fi
@@ -385,7 +390,7 @@ bootstrap_workspace() {
     sync_named_files_from_image \
         "${workflow_template_source_root}" \
         "${workflow_target_dir}" \
-        "${COMFY_BOOTSTRAP_WORKFLOWS:-video_ltx2_5_i2v.json}"
+        "${COMFY_BOOTSTRAP_WORKFLOWS:-video_ltx2_5_i2v.json,video_ltx2_5_t2v.json}"
 
     trap - RETURN
     release_bootstrap_lock "${bootstrap_lock_dir}"

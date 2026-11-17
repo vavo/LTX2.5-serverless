@@ -136,6 +136,33 @@ class TestFrontendApp(unittest.TestCase):
             "/api/comfy-output?filename=clip.mp4&subfolder=&media_kind=video",
         )
 
+    def test_config_reports_text_to_video_enabled(self) -> None:
+        response = self.client.get("/api/config")
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIs(body["text_to_video_enabled"], True)
+        self.assertIn("t2v", body["modes"])
+
+    def test_payload_t2v_mode_omits_images(self) -> None:
+        response = self.client.post(
+            "/api/payload",
+            json={"prompt": "A drone shot flying over mountains.", "mode": "t2v"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body["summary"]["mode"], "t2v")
+        self.assertNotIn("images", body["payload"]["input"])
+
+    def test_payload_rejects_unknown_mode(self) -> None:
+        response = self.client.post(
+            "/api/payload",
+            json={"prompt": "A drone shot flying over mountains.", "mode": "v2v"},
+        )
+
+        self.assertEqual(response.status_code, 422)
+
     def test_comfy_output_returns_file_response(self) -> None:
         with tempfile.NamedTemporaryFile(suffix=".mp4") as tmp_file:
             with patch.object(

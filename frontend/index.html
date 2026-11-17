@@ -18,18 +18,17 @@
         <section class="hero">
           <p class="eyebrow">LTX 2.5 payload builder</p>
           <h1>What will you imagine?</h1>
-          <p class="hero-copy">
+          <p id="hero-copy" class="hero-copy">
             Generate the JSON body for the LTX image-to-video API without doing
             frame math by hand like a prisoner.
           </p>
         </section>
 
-        <section class="mode-toggle" aria-label="Generation mode">
-          <button class="mode-pill" type="button" disabled>
+        <section class="mode-toggle" role="radiogroup" aria-label="Generation mode">
+          <button id="mode-t2v" class="mode-pill" type="button" data-mode="t2v" aria-checked="false">
             Text to Video
-            <span class="soon-chip">Soon</span>
           </button>
-          <button class="mode-pill mode-pill-active" type="button">
+          <button id="mode-i2v" class="mode-pill mode-pill-active" type="button" data-mode="i2v" aria-checked="true">
             Image to Video
           </button>
         </section>

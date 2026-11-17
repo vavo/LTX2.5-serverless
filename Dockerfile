@@ -86,19 +86,25 @@ RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
 
 ARG COMFY_WORKFLOW_TEMPLATES_REF=c74863f87d56b57265cfce844ab00b127c32e137
 ARG LTX25_EDITOR_WORKFLOW_SHA256=bcd3239835e8e5bf287a664954c253c67cd31147a4a4193ef5975525e246a7a0
+ARG LTX25_T2V_EDITOR_WORKFLOW_SHA256=b8ab11a3cb349bf6dccd9ad09307213e0088d833d1867270d23e1f794bab6a9d
 RUN wget -nv \
         -O /video_ltx2_5_i2v.json \
         "https://raw.githubusercontent.com/Comfy-Org/workflow_templates/${COMFY_WORKFLOW_TEMPLATES_REF}/templates/video_ltx2_5_i2v.json" \
-    && printf '%s  %s\n' \
+    && wget -nv \
+        -O /video_ltx2_5_t2v.json \
+        "https://raw.githubusercontent.com/Comfy-Org/workflow_templates/${COMFY_WORKFLOW_TEMPLATES_REF}/templates/video_ltx2_5_t2v.json" \
+    && printf '%s  %s\n%s  %s\n' \
         "${LTX25_EDITOR_WORKFLOW_SHA256}" \
         /video_ltx2_5_i2v.json \
+        "${LTX25_T2V_EDITOR_WORKFLOW_SHA256}" \
+        /video_ltx2_5_t2v.json \
         | sha256sum -c -
 
 WORKDIR /comfyui
 COPY src/extra_model_paths.yaml ./extra_model_paths.yaml
 
 WORKDIR /
-COPY src/start.sh src/bootstrap_workspace.sh src/bootstrap_ltx25.sh src/verify_comfy_models.py src/network_volume.py handler.py workflow_support.py frontend_app.py ltx_payload_builder.py video_ltx2_5_i2v_API.json test_input.json ./
+COPY src/start.sh src/bootstrap_workspace.sh src/bootstrap_ltx25.sh src/verify_comfy_models.py src/network_volume.py handler.py workflow_support.py frontend_app.py ltx_payload_builder.py video_ltx2_5_i2v_API.json video_ltx2_5_t2v_API.json test_input.json ./
 COPY frontend /frontend
 COPY scripts/comfy-node-install.sh /usr/local/bin/comfy-node-install
 COPY scripts/comfy-manager-set-mode.sh /usr/local/bin/comfy-manager-set-mode

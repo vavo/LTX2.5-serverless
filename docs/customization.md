@@ -56,7 +56,7 @@ To seed additional editor-format workflows into persisted ComfyUI state:
 FROM <registry>/<image>:<version>-base
 
 COPY my_workflow.json /my_workflow.json
-ENV COMFY_BOOTSTRAP_WORKFLOWS="video_ltx2_5_i2v.json,my_workflow.json"
+ENV COMFY_BOOTSTRAP_WORKFLOWS="video_ltx2_5_i2v.json,video_ltx2_5_t2v.json,my_workflow.json"
 ```
 
 The handler accepts API-format workflows directly in each request. Do not seed those files into the UI library; ComfyUI's canvas requires editor/save-format JSON with top-level `nodes` and `links`.

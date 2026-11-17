@@ -26,6 +26,8 @@ printf 'seeded comfy\n' > "${IMAGE_COMFY}/main.py"
 printf 'seeded venv\n' > "${IMAGE_VENV}/bin/python"
 printf '{\"nodes\":[],\"workflow\":\"seeded editor\"}\n' > "${IMAGE_APP}/video_ltx2_5_i2v.json"
 printf '{\"workflow\":\"api only\"}\n' > "${IMAGE_APP}/video_ltx2_5_i2v_API.json"
+printf '{\"nodes\":[],\"workflow\":\"seeded t2v editor\"}\n' > "${IMAGE_APP}/video_ltx2_5_t2v.json"
+printf '{\"workflow\":\"t2v api only\"}\n' > "${IMAGE_APP}/video_ltx2_5_t2v_API.json"
 mkdir -p "${IMAGE_COMFY}/custom_nodes/ComfyUI-Downloader"
 printf 'downloader present\n' > "${IMAGE_COMFY}/custom_nodes/ComfyUI-Downloader/README.txt"
 
@@ -68,8 +70,13 @@ assert_file_contains "${WORKSPACE_ROOT}/worker-comfyui/venv/bin/python" "seeded 
 assert_file_contains "${EXTRA_MODEL_PATHS_FILE}" "base_path: ${WORKSPACE_ROOT}"
 assert_file_contains "${WORKSPACE_ROOT}/worker-comfyui/comfyui/custom_nodes/ComfyUI-Downloader/README.txt" "downloader present"
 assert_file_contains "${WORKSPACE_ROOT}/worker-comfyui/comfyui/user/default/workflows/video_ltx2_5_i2v.json" "\"workflow\":\"seeded editor\""
+assert_file_contains "${WORKSPACE_ROOT}/worker-comfyui/comfyui/user/default/workflows/video_ltx2_5_t2v.json" "\"workflow\":\"seeded t2v editor\""
 [ ! -e "${WORKSPACE_ROOT}/worker-comfyui/comfyui/user/default/workflows/video_ltx2_5_i2v_API.json" ] || {
     echo "API workflow must not be installed in the ComfyUI user library"
+    exit 1
+}
+[ ! -e "${WORKSPACE_ROOT}/worker-comfyui/comfyui/user/default/workflows/video_ltx2_5_t2v_API.json" ] || {
+    echo "t2v API workflow must not be installed in the ComfyUI user library"
     exit 1
 }
 [ -L "${RUNTIME_COMFY}/models" ] || { echo "Expected ${RUNTIME_COMFY}/models to be a symlink"; exit 1; }
@@ -90,6 +97,8 @@ printf 'mutated venv\n' > "${IMAGE_VENV}/bin/python"
 printf 'downloader updated\n' > "${IMAGE_COMFY}/custom_nodes/ComfyUI-Downloader/README.txt"
 printf '{\"nodes\":[],\"workflow\":\"updated editor\"}\n' > "${IMAGE_APP}/video_ltx2_5_i2v.json"
 printf '{\"workflow\":\"legacy api\"}\n' > "${WORKSPACE_ROOT}/worker-comfyui/comfyui/user/default/workflows/video_ltx2_5_i2v_API.json"
+printf '{\"nodes\":[],\"workflow\":\"updated t2v editor\"}\n' > "${IMAGE_APP}/video_ltx2_5_t2v.json"
+printf '{\"workflow\":\"legacy t2v api\"}\n' > "${WORKSPACE_ROOT}/worker-comfyui/comfyui/user/default/workflows/video_ltx2_5_t2v_API.json"
 
 run_persistent_bootstrap
 
@@ -97,8 +106,13 @@ assert_file_contains "${WORKSPACE_ROOT}/worker-comfyui/comfyui/main.py" "seeded 
 assert_file_contains "${WORKSPACE_ROOT}/worker-comfyui/venv/bin/python" "seeded venv"
 assert_file_contains "${WORKSPACE_ROOT}/worker-comfyui/comfyui/custom_nodes/ComfyUI-Downloader/README.txt" "downloader updated"
 assert_file_contains "${WORKSPACE_ROOT}/worker-comfyui/comfyui/user/default/workflows/video_ltx2_5_i2v.json" "\"workflow\":\"updated editor\""
+assert_file_contains "${WORKSPACE_ROOT}/worker-comfyui/comfyui/user/default/workflows/video_ltx2_5_t2v.json" "\"workflow\":\"updated t2v editor\""
 [ ! -e "${WORKSPACE_ROOT}/worker-comfyui/comfyui/user/default/workflows/video_ltx2_5_i2v_API.json" ] || {
     echo "Expected legacy API workflow to be removed from user library"
+    exit 1
+}
+[ ! -e "${WORKSPACE_ROOT}/worker-comfyui/comfyui/user/default/workflows/video_ltx2_5_t2v_API.json" ] || {
+    echo "Expected legacy t2v API workflow to be removed from user library"
     exit 1
 }
 
@@ -140,6 +154,7 @@ mkdir -p "${LOCAL_RUNTIME_COMFY}/models"
 
 assert_file_contains "${LOCAL_EXTRA_MODEL_PATHS_FILE}" "base_path: ${LOCAL_RUNTIME_COMFY}"
 assert_file_contains "${LOCAL_RUNTIME_COMFY}/user/default/workflows/video_ltx2_5_i2v.json" "\"workflow\":\"updated editor\""
+assert_file_contains "${LOCAL_RUNTIME_COMFY}/user/default/workflows/video_ltx2_5_t2v.json" "\"workflow\":\"updated t2v editor\""
 
 LOCK_DIR="${WORKSPACE_ROOT}/worker-comfyui/.bootstrap.lock"
 mkdir -p "${WORKSPACE_ROOT}/worker-comfyui"

@@ -63,6 +63,12 @@ try:
 except:
     raise RuntimeError("Worker cannot start without workflow JSON.")
 
+try:
+    with open('video_ltx2_5_t2v_API.json', 'r') as f:
+        T2V_BASE_WORKFLOW = json.load(f)
+except:
+    raise RuntimeError("Worker cannot start without workflow JSON.")
+
 NODE_MAP = {
     "image": "395",
     "prompt": "398:376",
@@ -375,14 +381,23 @@ async def handle_custom_job(job_id: str, job_input: dict, start_time: float) -> 
 
     raw_prompt = job_input.get("prompt", "")
     image_url = job_input.get("image_url", "")
-    if not image_url or not raw_prompt:
-        raise ValueError("Missing 'image_url' or 'prompt'.")
+
+    mode = job_input.get("mode", "i2v")
+    if mode not in ("i2v", "t2v"):
+        raise ValueError(f"Unsupported mode: {mode}.")
+
+    if mode == "i2v":
+        if not image_url or not raw_prompt:
+            raise ValueError("Missing 'image_url' or 'prompt'.")
+    else:
+        if not raw_prompt:
+            raise ValueError("Missing 'prompt'.")
 
     if not AIEngine.safety_check(raw_prompt):
         raise ValueError("Prompt violates safety protocols.")
 
     enhanced_prompt = AIEngine.enhance_prompt(raw_prompt)
-    cache_hash = hashlib.sha256(f"{image_url}_{enhanced_prompt}".encode()).hexdigest()
+    cache_hash = hashlib.sha256(f"{mode}_{image_url}_{enhanced_prompt}".encode()).hexdigest()
     lock_token = str(uuid.uuid4())
 
     redis_state = await redis_client.get(cache_hash)
@@ -410,8 +425,11 @@ async def handle_custom_job(job_id: str, job_input: dict, start_time: float) -> 
         raise TimeoutError("Deduplication timeout.")
 
     try:
-        workflow = json.loads(json.dumps(BASE_WORKFLOW))
-        workflow[NODE_MAP["image"]]["inputs"]["image"] = image_url
+        if mode == "i2v":
+            workflow = json.loads(json.dumps(BASE_WORKFLOW))
+            workflow[NODE_MAP["image"]]["inputs"]["image"] = image_url
+        else:
+            workflow = json.loads(json.dumps(T2V_BASE_WORKFLOW))
         workflow[NODE_MAP["prompt"]]["inputs"]["value"] = enhanced_prompt
         workflow[NODE_MAP["seed1"]]["inputs"]["noise_seed"] = random.randint(1, 10**15)
         workflow[NODE_MAP["seed2"]]["inputs"]["noise_seed"] = random.randint(1, 10**15)

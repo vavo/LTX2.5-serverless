@@ -20,7 +20,9 @@ from starlette.responses import Response
 
 from ltx_payload_builder import (
     ASPECT_RATIOS,
+    DEFAULT_MODE,
     FPS,
+    MODES,
     SECONDS_MAX,
     SECONDS_MIN,
     SECONDS_STEP,
@@ -64,9 +66,17 @@ class PayloadRequest(BaseModel):
     prompt: str = Field(..., min_length=1, max_length=1000)
     seconds: float = Field(default=5.0, ge=SECONDS_MIN, le=SECONDS_MAX)
     aspect_ratio: str = Field(default="16:9")
-    image_name: str = Field(..., min_length=1)
-    image_data_url: str = Field(..., min_length=1)
+    mode: str = DEFAULT_MODE
+    image_name: str | None = None
+    image_data_url: str | None = None
     optimize_prompt: bool = True
+
+    @field_validator("mode")
+    @classmethod
+    def validate_mode(cls, value: str) -> str:
+        if value not in MODES:
+            raise ValueError(f"Unsupported mode: {value}. Expected one of {MODES}.")
+        return value
 
 
 class SubmitRequest(BaseModel):
@@ -334,7 +344,8 @@ async def config() -> dict[str, object]:
             "default": 5.0,
         },
         "aspect_ratios": ASPECT_RATIOS,
-        "text_to_video_enabled": False,
+        "text_to_video_enabled": True,
+        "modes": list(MODES),
         "run_mode": get_run_mode(),
         "submission_mode": get_submission_mode(),
     }
@@ -350,6 +361,7 @@ async def create_payload(request: PayloadRequest) -> dict[str, object]:
             image_name=request.image_name,
             image_data_url=request.image_data_url,
             optimize_prompt=request.optimize_prompt,
+            mode=request.mode,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -366,6 +378,7 @@ async def create_payload(request: PayloadRequest) -> dict[str, object]:
             "height": dimensions["height"],
             "aspect_ratio": request.aspect_ratio,
             "optimize_prompt": request.optimize_prompt,
+            "mode": request.mode,
         },
     }
 

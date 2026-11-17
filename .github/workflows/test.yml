@@ -40,6 +40,7 @@ jobs:
           python3 -m json.tool package.json >/dev/null
           python3 -m json.tool test_input.json >/dev/null
           python3 -m json.tool video_ltx2_5_i2v_API.json >/dev/null
+          python3 -m json.tool video_ltx2_5_t2v_API.json >/dev/null
 
       - name: Validate GitHub Actions workflow syntax
         run: |

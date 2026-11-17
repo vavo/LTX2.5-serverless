@@ -47,7 +47,7 @@ HUGGINGFACE_ACCESS_TOKEN=hf_xxx
 | `WORKSPACE_ROOT` | Override the detected persistent root. | `/workspace` when available |
 | `WORKSPACE_STATE_ROOT` | Persisted ComfyUI/venv/cache state directory. | `<WORKSPACE_ROOT>/worker-comfyui` |
 | `COMFY_BOOTSTRAP_REFRESH_CUSTOM_NODES` | Comma-separated baked node directories refreshed during bootstrap. | `ComfyUI-Downloader` |
-| `COMFY_BOOTSTRAP_WORKFLOWS` | Comma-separated editor-format workflows copied into the persisted ComfyUI user directory. | `video_ltx2_5_i2v.json` |
+| `COMFY_BOOTSTRAP_WORKFLOWS` | Comma-separated editor-format workflows copied into the persisted ComfyUI user directory. | `video_ltx2_5_i2v.json,video_ltx2_5_t2v.json` |
 | `BOOTSTRAP_PROGRESS_HEARTBEAT_SECONDS` | Interval for long seed-operation progress logs. | `15` |
 | `BOOTSTRAP_LOCK_TIMEOUT_SECONDS` | Maximum wait for the shared bootstrap lock. | `600` |
 | `BOOTSTRAP_LOCK_POLL_SECONDS` | Shared-lock polling interval. | `2` |
@@ -67,7 +67,7 @@ On Serverless, RunPod mounts a network volume at `/runpod-volume`; startup alias
 
 ComfyUI Manager is forced to offline mode at every boot. Install custom nodes in the image; runtime Manager installs are intentionally unavailable.
 
-The handler and bundled frontend execute `/video_ltx2_5_i2v_API.json`. ComfyUI's user workflow library receives the separate editor-format `/video_ltx2_5_i2v.json`; bootstrap removes the older API-format file from that library during migration.
+The handler and bundled frontend execute `/video_ltx2_5_i2v_API.json` and `/video_ltx2_5_t2v_API.json`. ComfyUI's user workflow library receives the separate editor-format `/video_ltx2_5_i2v.json` and `/video_ltx2_5_t2v.json`; bootstrap removes both older API-format files from that library during migration.
 
 ## Handler and ComfyUI
 

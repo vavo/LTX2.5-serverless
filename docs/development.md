@@ -43,6 +43,7 @@ python3 -m unittest \
 
 python3 -m json.tool .runpod/hub.json >/dev/null
 python3 -m json.tool video_ltx2_5_i2v_API.json >/dev/null
+python3 -m json.tool video_ltx2_5_t2v_API.json >/dev/null
 docker buildx bake --print ltx2-5-distilled-int8 >/dev/null
 docker buildx bake --print ltx2-5-distilled-int8-cu128 >/dev/null
 ```
@@ -74,7 +75,7 @@ Before publishing a release:
 1. Build the exact bake target for `linux/amd64`.
 2. Boot it on the intended Blackwell GPU and CUDA-compatible driver.
 3. Confirm the preload is reused after restart.
-4. Run the checked-in I2V workflow through the handler.
+4. Run the checked-in I2V and T2V workflows through the handler.
 5. Verify the returned video and S3 mode if enabled.
 6. Repeat on the CUDA 12.8 target only if that fallback will be published.
 

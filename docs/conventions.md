@@ -8,7 +8,7 @@ This repository packages ComfyUI as a RunPod worker for LTX 2.5. CUDA 13.0 is th
 - Model weights, ComfyUI state, the Python venv, and caches persist under `/workspace`.
 - The recommended target is `ltx2-5-distilled-int8` on CUDA 13.0.
 - The image starts from Ubuntu 24.04; pinned PyTorch wheels provide CUDA user-space libraries without duplicating an NVIDIA CUDA runtime base.
-- The checked-in API workflow is [`video_ltx2_5_i2v_API.json`](../video_ltx2_5_i2v_API.json); the pinned official editor workflow is fetched during the image build and seeded into ComfyUI's user library.
+- The checked-in API workflows are [`video_ltx2_5_i2v_API.json`](../video_ltx2_5_i2v_API.json) and [`video_ltx2_5_t2v_API.json`](../video_ltx2_5_t2v_API.json); the pinned official editor workflows are fetched during the image build and seeded into ComfyUI's user library.
 - ComfyUI Manager is forced offline at startup. Bake custom nodes into the image.
 
 ## Docker
