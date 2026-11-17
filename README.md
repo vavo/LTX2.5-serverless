@@ -94,7 +94,7 @@ Choose this when you want to create videos directly, edit workflows in ComfyUI, 
 
 The quickest route is the ready-made RunPod template:
 
-[**Deploy the LTX 2.5 Pod template**](https://console.runpod.io/deploy?template=zzlfhm0e3c&ref=o3idfm0n)
+[**Deploy the LTX 2.5 Pod template**](https://get.runpod.io/ltx25-pod-and-serverless)
 
 When configuring the pod:
 
